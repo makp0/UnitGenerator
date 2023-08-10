@@ -305,22 +305,21 @@ namespace {{ns}}
 
 """);
                 }
-            }
-            if (!symbol.IsRecord)
-            {
+                
                 sb.AppendLine($$"""
-        public static bool operator ==(in {{unitTypeName}} x, in {{unitTypeName}} y)
-        {
-            return x.value.Equals(y.value);
-        }
+                                        public static bool operator ==(in {{unitTypeName}} x, in {{unitTypeName}} y)
+                                        {
+                                            return x.value.Equals(y.value);
+                                        }
+                                
+                                        public static bool operator !=(in {{unitTypeName}} x, in {{unitTypeName}} y)
+                                        {
+                                            return !x.value.Equals(y.value);
+                                        }
 
-        public static bool operator !=(in {{unitTypeName}} x, in {{unitTypeName}} y)
-        {
-            return !x.value.Equals(y.value);
-        }
-
-""");
+                                """);
             }
+
 
             if (prop.IsGuid())
             {
