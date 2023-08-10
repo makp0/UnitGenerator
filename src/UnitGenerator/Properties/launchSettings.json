@@ -1,8 +1,9 @@
 {
+  "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
     "UnitGenerator": {
       "commandName": "DebugRoslynComponent",
-      "targetProject": "..\\..\\sandbox\\ConsoleApp\\ConsoleApp.csproj"
+      "targetProject": "../../sandbox/ConsoleApp/ConsoleApp.csproj"
     }
   }
 }
