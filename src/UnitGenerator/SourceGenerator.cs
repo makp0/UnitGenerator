@@ -238,7 +238,7 @@ namespace {{ns}}
 """);
             }
             
-            var convertModifier = prop.HasFlag(UnitGenerateOptions.ImplicitOperator) ? "implicit"  : "explicit";
+            var convertModifier = prop.HasFlag(UnitGenerateOptions.ImplicitOperator) || prop.HasFlag(UnitGenerateOptions.OnlyToPrimitiveImplicitOperator) ? "implicit"  : "explicit";
             sb.AppendLine($$"""
         public static {{convertModifier}} operator {{innerTypeName}}({{unitTypeName}} value)
         {
