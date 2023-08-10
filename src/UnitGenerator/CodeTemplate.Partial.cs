@@ -7,6 +7,7 @@ namespace UnitGenerator
         internal string? Namespace { get; set; }
         internal string? Type { get; set; }
         internal string? Name { get; set; }
+        public bool IsRecord { get; set; }
         internal UnitGenerateOptions Options { get; set; }
         public string? ToStringFormat { get; set; }
 

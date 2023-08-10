@@ -25,7 +25,7 @@ namespace UnitGenerator
                 var receiver = context.SyntaxReceiver as SyntaxReceiver;
                 if (receiver == null) return;
 
-                var list = new List<(StructDeclarationSyntax, UnitOfAttributeProperty)>();
+                var list = new List<(TypeDeclarationSyntax, UnitOfAttributeProperty)>();
                 foreach (var (type, attr) in receiver.Targets)
                 {
                     if (attr.ArgumentList is null) continue;
@@ -208,7 +208,7 @@ namespace {{ns}}
             var comparableDeclare = prop.HasFlag(UnitGenerateOptions.Comparable) ? $", IComparable<{unitTypeName}>" : "";
             sb.AppendLine($$"""
     [System.ComponentModel.TypeConverter(typeof({{unitTypeName}}TypeConverter))]
-    readonly partial struct {{unitTypeName}} : IEquatable<{{unitTypeName}}>{{comparableDeclare}}
+    readonly partial {{(symbol.IsRecord ? "record" : string.Empty)}} struct {{unitTypeName}} : IEquatable<{{unitTypeName}}>{{comparableDeclare}}
     {
         readonly {{innerTypeName}} value;
 
@@ -248,7 +248,10 @@ namespace {{ns}}
         {
             return new {{unitTypeName}}(value);
         }
-
+""");
+            if (!symbol.IsRecord)
+            {
+                sb.AppendLine($$"""     
         public bool Equals({{unitTypeName}} other)
         {
             return value.Equals(other.value);
@@ -276,25 +279,26 @@ namespace {{ns}}
         }
 
 """);
-            if (prop.ToStringFormat is { } format)
-            {
-                sb.AppendLine($$"""
+                if (prop.ToStringFormat is { } format)
+                {
+                    sb.AppendLine($$"""
         public override string ToString()
         {
             return string.Format({{format}}, value);
         }
 
 """);
-            }
-            else
-            {
-                sb.AppendLine($$"""
+                }
+                else
+                {
+                    sb.AppendLine($$"""
         public override string ToString()
         {
             return value.ToString();
         }
 
 """);
+                }
             }
             sb.AppendLine($$"""
         public static bool operator ==(in {{unitTypeName}} x, in {{unitTypeName}} y)
@@ -907,18 +911,23 @@ namespace {{ns}}
 
         class SyntaxReceiver : ISyntaxReceiver
         {
-            public List<(StructDeclarationSyntax type, AttributeSyntax attr)> Targets { get; } = new();
+            public List<(TypeDeclarationSyntax type, AttributeSyntax attr)> Targets { get; } = new();
 
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {
-                if (syntaxNode is StructDeclarationSyntax s && s.AttributeLists.Count > 0)
+                if (!IsSupportedStruct(syntaxNode)) return;
+
+                var node = (TypeDeclarationSyntax)syntaxNode;
+
+                var attr = node.AttributeLists.SelectMany(x => x.Attributes).FirstOrDefault(x => x.Name.ToString() is "UnitOf" or "UnitOfAttribute" or "UnitGenerator.UnitOf" or "UnitGenerator.UnitOfAttribute");
+                if (attr != null)
                 {
-                    var attr = s.AttributeLists.SelectMany(x => x.Attributes).FirstOrDefault(x => x.Name.ToString() is "UnitOf" or "UnitOfAttribute" or "UnitGenerator.UnitOf" or "UnitGenerator.UnitOfAttribute");
-                    if (attr != null)
-                    {
-                        Targets.Add((s, attr));
-                    }
+                    Targets.Add((node, attr));
                 }
+
+                static bool IsSupportedStruct(SyntaxNode node) => 
+                    node is StructDeclarationSyntax ||
+                    node is RecordDeclarationSyntax record && record.ChildTokens().Any(token => token.IsKind(SyntaxKind.StructKeyword));
             }
         }
     }

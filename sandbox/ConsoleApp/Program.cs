@@ -88,3 +88,7 @@ namespace Sample
     public readonly partial struct StringId { }
 }
 
+    
+[UnitOf(typeof(decimal))]
+readonly partial record struct Struct;
+
