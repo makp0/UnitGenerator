@@ -145,7 +145,8 @@ namespace UnitGenerator
         DapperTypeHandler = 512,
         EntityFrameworkValueConverter = 1024,
         WithoutComparisonOperator = 2048,
-        JsonConverterDictionaryKeySupport = 4096
+        JsonConverterDictionaryKeySupport = 4096,
+        NoToPrimitiveImplicitOperator = 8192
     }
 }
 """;
@@ -243,12 +244,17 @@ namespace {{ns}}
         {
             return value.value;
         }
-
+""");
+            if (!prop.HasFlag(UnitGenerateOptions.NoToPrimitiveImplicitOperator))
+            {
+                sb.AppendLine($$"""
         public static {{convertModifier}} operator {{unitTypeName}}({{innerTypeName}} value)
         {
             return new {{unitTypeName}}(value);
         }
 """);
+            }
+
             if (!symbol.IsRecord)
             {
                 sb.AppendLine($$"""     
@@ -300,7 +306,9 @@ namespace {{ns}}
 """);
                 }
             }
-            sb.AppendLine($$"""
+            if (!symbol.IsRecord)
+            {
+                sb.AppendLine($$"""
         public static bool operator ==(in {{unitTypeName}} x, in {{unitTypeName}} y)
         {
             return x.value.Equals(y.value);
@@ -312,6 +320,8 @@ namespace {{ns}}
         }
 
 """);
+            }
+
             if (prop.IsGuid())
             {
                 sb.AppendLine($$"""
