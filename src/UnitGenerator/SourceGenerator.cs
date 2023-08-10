@@ -212,6 +212,8 @@ namespace {{ns}}
     readonly partial {{(symbol.IsRecord ? "record" : string.Empty)}} struct {{unitTypeName}} : IEquatable<{{unitTypeName}}>{{comparableDeclare}}
     {
         readonly {{innerTypeName}} value;
+        
+        public {{innerTypeName}} Value => this.value;
 
         public {{innerTypeName}} AsPrimitive() => value;
 
