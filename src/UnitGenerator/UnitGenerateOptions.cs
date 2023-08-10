@@ -20,6 +20,6 @@ namespace UnitGenerator
         EntityFrameworkValueConverter = 1024,
         WithoutComparisonOperator = 2048,
         JsonConverterDictionaryKeySupport = 4096,
-        NoToPrimitiveImplicitOperator = 8192
+        OnlyToPrimitiveImplicitOperator = 8192
     }
 }

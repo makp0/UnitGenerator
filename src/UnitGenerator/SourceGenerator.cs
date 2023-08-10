@@ -146,7 +146,7 @@ namespace UnitGenerator
         EntityFrameworkValueConverter = 1024,
         WithoutComparisonOperator = 2048,
         JsonConverterDictionaryKeySupport = 4096,
-        NoToPrimitiveImplicitOperator = 8192
+        OnlyToPrimitiveImplicitOperator = 8192
     }
 }
 """;
@@ -245,15 +245,15 @@ namespace {{ns}}
             return value.value;
         }
 """);
-            if (!prop.HasFlag(UnitGenerateOptions.NoToPrimitiveImplicitOperator))
-            {
+
+            convertModifier = prop.HasFlag(UnitGenerateOptions.OnlyToPrimitiveImplicitOperator) ? "explicit" : convertModifier;
+            
                 sb.AppendLine($$"""
         public static {{convertModifier}} operator {{unitTypeName}}({{innerTypeName}} value)
         {
             return new {{unitTypeName}}(value);
         }
 """);
-            }
 
             if (!symbol.IsRecord)
             {
