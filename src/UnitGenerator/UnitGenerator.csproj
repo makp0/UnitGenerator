@@ -14,7 +14,7 @@
 		<DevelopmentDependency>true</DevelopmentDependency>
 
         <!-- NuGet -->
-        <PackageId>Mapolu.UnitGenerator</PackageId>
+        <PackageId>UnitGenerator</PackageId>
         <Description>C# Source Generator to create value-object, inspired by units of measure.</Description>
 
         <PackageVersion>$(Version)</PackageVersion>
