@@ -70,6 +70,7 @@ jobs:
       - uses: actions/download-artifact@v2
       # Upload to NuGet
       - run: dotnet nuget push "./nuget/*.nupkg" -s https://www.nuget.org/api/v2/package -k ${{ secrets.NUGET_KEY }}
+        continue-on-error: true
       - run: dotnet nuget push "./nuget/*.nupkg" --skip-duplicate --api-key ${{ secrets.MYGET_API_KEY }} --source https://www.myget.org/F/${{ vars.MYGET_FEED_NAME || 'unitgenerator' }}/api/v3/index.json
 
       # Upload to Releases
